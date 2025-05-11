@@ -11,11 +11,17 @@ public class ProxyConnector {
         System.setProperty("https.proxyPort", String.valueOf(config.port()));
 
         if (config.username() != null && !config.username().isEmpty()) {
+            System.setProperty("http.proxyUser", config.username());
+            System.setProperty("http.proxyPassword", config.password());
+
             java.net.Authenticator.setDefault(new java.net.Authenticator() {
                 @Override
                 protected java.net.PasswordAuthentication getPasswordAuthentication() {
-                    return new java.net.PasswordAuthentication(
-                            config.username(), config.password().toCharArray());
+                    if (getRequestorType() == RequestorType.PROXY) {
+                        return new java.net.PasswordAuthentication(
+                                config.username(), config.password().toCharArray());
+                    }
+                    return null;
                 }
             });
         }
@@ -28,6 +34,12 @@ public class ProxyConnector {
         System.clearProperty("http.proxyPort");
         System.clearProperty("https.proxyHost");
         System.clearProperty("https.proxyPort");
+
+        System.clearProperty("http.proxyUser");
+        System.clearProperty("http.proxyPassword");
+
+        java.net.Authenticator.setDefault(null);
+
         System.out.println("Proxy disconnected. System properties cleared.");
     }
 }

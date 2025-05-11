@@ -7,7 +7,7 @@ public class NetworkManager {
 
     public static void restoreDefaultRoute() {
         OSUtil.OSType os = OSUtil.getOSType();
-        System.out.println("🔧 Restoring network settings for OS: " + os);
+        System.out.println("Restoring network settings for OS: " + os);
 
         switch (os) {
             case WINDOWS -> runCommand("ipconfig", "/flushdns");

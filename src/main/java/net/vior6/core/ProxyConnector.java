@@ -5,22 +5,29 @@ import net.vior6.config.Config;
 public class ProxyConnector {
 
     public static void connect(Config config) {
-        System.setProperty("socksProxyHost", config.ip());
-        System.setProperty("socksProxyPort", String.valueOf(config.port()));
+        System.setProperty("http.proxyHost", config.ip());
+        System.setProperty("http.proxyPort", String.valueOf(config.port()));
+        System.setProperty("https.proxyHost", config.ip());
+        System.setProperty("https.proxyPort", String.valueOf(config.port()));
 
-        java.net.Authenticator.setDefault(new java.net.Authenticator() {
-            @Override
-            protected java.net.PasswordAuthentication getPasswordAuthentication() {
-                return new java.net.PasswordAuthentication(config.username(), config.password().toCharArray());
-            }
-        });
+        if (config.username() != null && !config.username().isEmpty()) {
+            java.net.Authenticator.setDefault(new java.net.Authenticator() {
+                @Override
+                protected java.net.PasswordAuthentication getPasswordAuthentication() {
+                    return new java.net.PasswordAuthentication(
+                            config.username(), config.password().toCharArray());
+                }
+            });
+        }
 
-        System.out.println("🧠 Routing system HTTP/HTTPS traffic via SOCKS5 Proxy with authentication...");
+        System.out.println("Routing system HTTP/HTTPS traffic via HTTP Proxy with authentication...");
     }
 
     public static void disconnect() {
-        System.clearProperty("socksProxyHost");
-        System.clearProperty("socksProxyPort");
-        System.out.println("🔌 Proxy disconnected. System properties cleared.");
+        System.clearProperty("http.proxyHost");
+        System.clearProperty("http.proxyPort");
+        System.clearProperty("https.proxyHost");
+        System.clearProperty("https.proxyPort");
+        System.out.println("Proxy disconnected. System properties cleared.");
     }
 }
